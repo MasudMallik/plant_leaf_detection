@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Herbarium — Leaf Identification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F1EAD9;
+    --card: #EAE0C8;
+    --card-edge: #D9CBA8;
+    --forest: #1F3D2B;
+    --forest-dim: #33513E;
+    --moss: #5C7A5C;
+    --ochre: #B8863B;
+    --rust: #9C5B3C;
+    --ink: #2B2417;
+    --ink-soft: #5A4E3C;
+    --radius: 3px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(92,122,92,0.06), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(184,134,59,0.07), transparent 55%);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    line-height: 1.6;
+  }
+
+  body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 20px 80px;
+  }
+
+  a{ color: inherit; }
+
+  /* ---------- Header ---------- */
+  .masthead{
+    width: 100%;
+    max-width: 720px;
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .eyebrow{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ochre);
+    margin: 0 0 14px;
+  }
+
+  .eyebrow::before, .eyebrow::after{
+    content: "·";
+    margin: 0 10px;
+    color: var(--moss);
+  }
+
+  h1{
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: clamp(34px, 6vw, 52px);
+    color: var(--forest);
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .subhead{
+    font-size: 15px;
+    color: var(--ink-soft);
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .divider{
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 36px 0;
+    color: var(--moss);
+  }
+  .divider .line{ flex: 1; height: 1px; background: var(--card-edge); }
+  .divider svg{ width: 22px; height: 22px; opacity: 0.75; flex-shrink: 0; }
+
+  /* ---------- Upload panel ---------- */
+  .specimen-slot{
+    width: 100%;
+    max-width: 560px;
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    box-shadow: 0 1px 0 rgba(31,61,43,0.04), 0 14px 30px -18px rgba(43,36,23,0.35);
+  }
+
+  .slot-label{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--forest-dim);
+    margin: 0 0 18px;
+  }
+
+  .mount{
+    border: 1.5px dashed var(--moss);
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.28);
+    padding: 30px 22px;
+    text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .mount:has(input:focus-visible){
+    border-color: var(--ochre);
+    outline: none;
+  }
+
+  .mount-icon{
+    width: 34px;
+    height: 34px;
+    margin: 0 auto 14px;
+    color: var(--moss);
+  }
+
+  .mount p{
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  input[type="file"]{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--ink);
+    width: 100%;
+    max-width: 340px;
+  }
+
+  input[type="file"]::file-selector-button{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--forest);
+    color: var(--paper);
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  input[type="file"]::file-selector-button:hover{ background: var(--forest-dim); }
+
+  .seal-btn{
+    display: block;
+    width: 100%;
+    margin-top: 26px;
+    padding: 13px 20px;
+    background: var(--ochre);
+    color: var(--paper);
+    border: none;
+    border-radius: var(--radius);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .seal-btn:hover{ background: var(--rust); }
+  .seal-btn:active{ transform: translateY(1px); }
+  .seal-btn:focus-visible{ outline: 2px solid var(--forest); outline-offset: 3px; }
+
+  /* ---------- Results: specimen sheet ---------- */
+  .sheet{
+    width: 100%;
+    max-width: 560px;
+    margin-top: 40px;
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius);
+    padding: 0;
+    position: relative;
+    box-shadow: 0 1px 0 rgba(31,61,43,0.04), 0 18px 36px -20px rgba(43,36,23,0.4);
+  }
+
+  .tape{
+    position: absolute;
+    top: -12px;
+    left: 34px;
+    width: 74px;
+    height: 24px;
+    background: rgba(184,134,59,0.35);
+    border: 1px solid rgba(184,134,59,0.5);
+    transform: rotate(-3deg);
+  }
+
+  .sheet-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 34px 36px 20px;
+    border-bottom: 1px solid var(--card-edge);
+  }
+
+  .catalog{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--moss);
+  }
+
+  .catalog strong{ color: var(--forest); }
+
+  .species{
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(26px, 4.4vw, 34px);
+    color: var(--forest);
+    margin: 8px 0 0;
+    line-height: 1.15;
+  }
+
+  .stamp{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rust);
+    border: 1px solid var(--rust);
+    border-radius: 999px;
+    padding: 5px 12px;
+    white-space: nowrap;
+    transform: rotate(2deg);
+  }
+
+  .entry{
+    padding: 26px 36px;
+  }
+  .entry + .entry{
+    border-top: 1px solid var(--card-edge);
+  }
+
+  .entry-label{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--forest-dim);
+    margin: 0 0 12px;
+  }
+
+  .entry-label svg{ width: 14px; height: 14px; color: var(--ochre); }
+
+  .entry-body{
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .entry-body p{ margin: 0 0 12px; }
+  .entry-body p:last-child{ margin-bottom: 0; }
+  .entry-body ul{ margin: 0 0 12px; padding-left: 20px; }
+  .entry-body li{ margin-bottom: 6px; }
+  .entry-body h3{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--forest);
+    margin: 16px 0 8px;
+  }
+  .entry-body h3:first-child{ margin-top: 0; }
+  .entry-body strong{ color: var(--forest-dim); }
+
+  .sheet-foot{
+    padding: 16px 36px 26px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: var(--moss);
+    letter-spacing: 0.06em;
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top: 60px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 480px){
+    .sheet-head{ flex-direction: column; gap: 14px; }
+    .specimen-slot, .sheet{ padding-left: 0; }
+    .entry, .sheet-head{ padding-left: 24px; padding-right: 24px; }
+    .specimen-slot{ padding: 30px 22px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="masthead">
+    <p class="eyebrow">Digital Herbarium</p>
+    <h1>Leaf Identification Lab</h1>
+    <p class="subhead">Upload a photograph of a leaf. The specimen is classified, catalogued, and annotated with botanical and cultivation notes.</p>
+  </div>
+
+  <div class="specimen-slot">
+    <p class="slot-label">01 — Submit Specimen</p>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+      <div class="mount">
+        <svg class="mount-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 3c-4 3-7 7-7 11a7 7 0 0 0 14 0c0-4-3-8-7-11z"/>
+          <path d="M12 7v11" stroke-linecap="round"/>
+        </svg>
+        <p>Choose a clear, well-lit image of a single leaf</p>
+        <input type="file" id="img" name="img" accept="image/*" required>
+      </div>
+      <button type="submit" class="seal-btn">Identify Specimen</button>
+    </form>
+  </div>
+
+  {% if output %}
+  <div class="divider">
+    <span class="line"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M12 3c-4 3-7 7-7 11a7 7 0 0 0 14 0c0-4-3-8-7-11z"/>
+      <path d="M12 7v11M9 10c1 .5 1.6 1.2 2 2M15 10c-1 .5-1.6 1.2-2 2" stroke-linecap="round"/>
+    </svg>
+    <span class="line"></span>
+  </div>
+
+  <div class="sheet">
+    <div class="tape"></div>
+    <div class="sheet-head">
+      <div>
+        <p class="catalog">Specimen No. <strong>{{ output[:3]|upper }}-001</strong></p>
+        <p class="species">{{ output }}</p>
+      </div>
+      <span class="stamp">Identified</span>
+    </div>
+
+    <div class="entry">
+      <p class="entry-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+        Botanical Notes
+      </p>
+      <div class="entry-body">
+        <p>{{ plant_info }}</p>
+      </div>
+    </div>
+
+    <div class="entry">
+      <p class="entry-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-4 3-7 7-7 11a7 7 0 0 0 14 0c0-4-3-8-7-11z"/></svg>
+        Cultivation Notes
+      </p>
+      <div class="entry-body">
+        {{ gardening_info }}
+      </div>
+    </div>
+
+    <p class="sheet-foot">Filed automatically · CNN classification, verified by field agent</p>
+  </div>
+  {% endif %}
+
+  <footer>Digital Herbarium &middot; Specimen Archive</footer>
+
+</body>
+</html>

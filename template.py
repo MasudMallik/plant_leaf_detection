@@ -3,11 +3,8 @@ from pathlib import Path
 
 files=[
     "backend/model_train.ipynb",
-    "backend/data_ingestion.py",
     "backend/main.py",
-    "backend/DOCKERFILE",
     "frontend/templates/index.html",
-    "frontend/DOCKERFILE",
     "backend/logger.py"
 ]
 

@@ -5,3 +5,8 @@ langchain-groq
 scikit-learn
 DVC
 mlflow
+python-multipart
+fastapi
+jinja2
+uvicorn
+dotenv
